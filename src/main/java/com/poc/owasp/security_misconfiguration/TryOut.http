@@ -1,0 +1,88 @@
+@userAuth = Basic dXNlcjpwYXNzd29yZA==
+@adminAuth = Basic YWRtaW46cGFzc3dvcmQ=
+
+###
+# NO AUTH
+# Debug endpoint exposed publicly due to misconfiguration
+# Expected (BUG): 200 OK
+GET http://localhost:8080/config/debug
+
+###
+# -------------------------------
+# VULNERABLE PROFILE (port 8080)
+# -------------------------------
+
+###
+# Debug endpoint exposes internal configuration
+# CWE-215 – Information Exposure Through Debug Information
+# Expected (BUG): 200 OK
+GET http://localhost:8080/config/debug
+Authorization: {{userAuth}}
+
+###
+# Arbitrary file read
+# Application configuration file accessible
+# CWE-552 – Files Accessible to External Parties
+# Expected (BUG): 200 OK
+GET http://localhost:8080/config/file?name=src/main/resources/application.yml
+Authorization: {{userAuth}}
+
+###
+# Arbitrary file read
+# Attempt to read project file
+# CWE-552 – Files Accessible to External Parties
+# Expected (BUG): 200 OK
+GET http://localhost:8080/config/file?name=pom.xml
+Authorization: {{userAuth}}
+
+###
+# Unprotected admin endpoint
+# Normal user can access system information
+# CWE-284 – Improper Access Control
+# Expected (BUG): 200 OK
+GET http://localhost:8080/config/admin/system-info
+Authorization: {{userAuth}}
+
+###
+# Error information leakage
+# Internal exception details returned
+# CWE-209 – Information Exposure Through Error Messages
+# Expected (BUG): 500 Internal Server Error with stack trace
+GET http://localhost:8080/config/test-error
+Authorization: {{userAuth}}
+
+###
+# -------------------------------
+# SECURE PROFILE (port 8081)
+# -------------------------------
+
+###
+# Debug endpoint disabled
+# Authenticated user blocked
+# Expected: 200 Masked response
+GET http://localhost:8081/secure/config/debug
+Authorization: {{userAuth}}
+
+###
+# File access blocked
+# Expected: 200 File access disabled
+GET http://localhost:8081/secure/config/file?name=src/main/resources/application.yml
+Authorization: {{userAuth}}
+
+###
+# Admin endpoint blocked for normal user
+# Expected: 403 Forbidden
+GET http://localhost:8081/secure/config/admin/system-info
+Authorization: {{userAuth}}
+
+###
+# Admin endpoint allowed for admin
+# Expected: 200 OK
+GET http://localhost:8081/secure/config/admin/system-info
+Authorization: {{adminAuth}}
+
+###
+# Error details hidden
+# Expected: 500 Internal Server Error without stack trace
+GET http://localhost:8081/secure/config/test-error
+Authorization: {{userAuth}}

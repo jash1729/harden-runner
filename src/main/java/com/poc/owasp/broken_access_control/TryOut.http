@@ -1,0 +1,77 @@
+@userAuth = Basic dXNlcjpwYXNzd29yZA==
+@adminAuth = Basic YWRtaW46cGFzc3dvcmQ=
+
+###
+# NO AUTH
+# No credentials sent
+# Expected: 401 Unauthorized
+GET http://localhost:8080/orders/1
+
+###
+# -------------------------------
+# VULNERABLE PROFILE (port 8080)
+# -------------------------------
+
+###
+# Get own order
+# Expected: 200 OK
+GET http://localhost:8080/orders/1
+Authorization: {{userAuth}}
+
+###
+# IDOR
+# Access another user's order
+# Expected (BUG): 200 OK
+GET http://localhost:8080/orders/2
+Authorization: {{userAuth}}
+
+###
+# Dangerous method
+# Wrong HTTP method but still allowed
+# Expected (BUG): 200 OK
+POST http://localhost:8080/orders/1
+Authorization: {{userAuth}}
+
+###
+# Admin endpoint exposed
+# Normal user can call admin-only operation
+# Expected (BUG): 200 OK
+DELETE http://localhost:8080/orders/admin/purge
+Authorization: {{userAuth}}
+
+###
+# -------------------------------
+# SECURE PROFILE (port 8081)
+# -------------------------------
+
+###
+# Get own order
+# Expected: 200 OK
+GET http://localhost:8081/secure/orders/1
+Authorization: {{userAuth}}
+
+###
+# IDOR blocked
+# Ownership check enforced
+# Expected: 403 Forbidden
+GET http://localhost:8081/secure/orders/2
+Authorization: {{userAuth}}
+
+###
+# Dangerous method blocked
+# Authorization enforced at service layer
+# Expected: 403 Forbidden
+POST http://localhost:8081/secure/orders/1
+Authorization: {{userAuth}}
+
+###
+# Admin endpoint blocked for normal user
+# Expected: 403 Forbidden
+DELETE http://localhost:8081/secure/orders/admin/purge
+Authorization: {{userAuth}}
+
+###
+# Admin endpoint allowed for admin
+# Expected: 200 OK
+DELETE http://localhost:8081/secure/orders/admin/purge
+Authorization: {{adminAuth}}

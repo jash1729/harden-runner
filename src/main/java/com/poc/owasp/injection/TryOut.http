@@ -1,0 +1,67 @@
+@userAuth = Basic dXNlcjpwYXNzd29yZA==
+
+###
+# -------------------------------
+# VULNERABLE PROFILE (port 8080)
+# -------------------------------
+
+###
+# Normal search
+# Expected: 200 OK
+# Returns only products in the "electronics" category
+GET http://localhost:8080/injection/search?category=electronics
+Authorization: {{userAuth}}
+
+###
+# SQL Injection
+# Inject condition to bypass filtering
+# Expected (BUG): returns ALL products from the table
+GET http://localhost:8080/injection/search?category=electronics' OR '1'='1
+Authorization: {{userAuth}}
+
+###
+# Weak blacklist bypass
+# Blacklist only checks for simple characters
+# Expected (BUG): injection still executes
+GET http://localhost:8080/injection/search?category=electronics' OR 'a'='a
+Authorization: {{userAuth}}
+
+###
+# Header injection
+# User-controlled value written directly to response header
+# Expected (BUG): response header X-Demo-User contains attacker value
+GET http://localhost:8080/injection/header?value=adminInjected
+Authorization: {{userAuth}}
+
+###
+# -------------------------------
+# SECURE PROFILE (port 8081)
+# -------------------------------
+
+###
+# Normal search
+# Expected: 200 OK
+# Safe query using validated input and parameterized repository method
+GET http://localhost:8081/secure/injection/search?category=electronics
+Authorization: {{userAuth}}
+
+###
+# Injection blocked
+# Input validation prevents malicious query manipulation
+# Expected: 400 Bad Request
+GET http://localhost:8081/secure/injection/search?category=electronics' OR '1'='1
+Authorization: {{userAuth}}
+
+###
+# Invalid input rejected
+# Allow-list validation blocks unexpected characters
+# Expected: 400 Bad Request
+GET http://localhost:8081/secure/injection/search?category=electronics123
+Authorization: {{userAuth}}
+
+###
+# Header sanitized
+# CRLF and unsafe characters removed before setting header
+# Expected: safe header value returned in X-Demo-User
+GET http://localhost:8081/secure/injection/header?value=adminInjected
+Authorization: {{userAuth}}

@@ -1,0 +1,51 @@
+###
+# -------------------------------
+# VULNERABLE PROFILE (port 8080)
+# -------------------------------
+
+###
+# Weak password handling
+# Expected (BUG): 200 OK
+POST http://localhost:8080/crypto/login
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "password"
+}
+
+###
+# Predictable reset token
+# Expected (BUG): 200 OK
+POST http://localhost:8080/crypto/reset-token
+Content-Type: application/json
+
+{
+  "username": "user"
+}
+
+###
+# -------------------------------
+# SECURE PROFILE (port 8081)
+# -------------------------------
+
+###
+# Strong password handling
+# Expected: 200 OK
+POST http://localhost:8081/secure/crypto/login
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "password"
+}
+
+###
+# Unpredictable reset token
+# Expected: 200 OK
+POST http://localhost:8081/secure/crypto/reset-token
+Content-Type: application/json
+
+{
+  "username": "user"
+}

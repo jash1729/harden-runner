@@ -1,0 +1,61 @@
+@userAuth = Basic dXNlcjpwYXNzd29yZA==
+
+###
+# VULNERABLE PROFILE (port 8080)
+
+###
+# Null pointer dereference
+# Order does not exist
+# Expected (BUG): 500 Internal Server Error
+GET http://localhost:8080/exception/orders/999
+Authorization: {{userAuth}}
+
+###
+# Missing request parameter
+# Framework rejects request before app logic
+# Expected: 400 Bad Request
+GET http://localhost:8080/exception/orders
+Authorization: {{userAuth}}
+
+###
+# Exceptional condition swallowed
+# Business rule failure hidden
+# Expected (BUG): 200 OK
+POST http://localhost:8080/exception/orders/1/close
+Authorization: {{userAuth}}
+
+###
+# Sensitive error information leakage
+# Expected (BUG): 200 OK with internal error message
+GET http://localhost:8080/exception/orders/1/debug
+Authorization: {{userAuth}}
+
+###
+# -------------------------------
+# SECURE PROFILE (port 8081)
+# -------------------------------
+
+###
+# Order not found handled correctly
+# Expected: 404 Not Found
+GET http://localhost:8081/secure/exception/orders/999
+Authorization: {{userAuth}}
+
+###
+# Missing parameter rejected
+# Expected: 400 Bad Request
+GET http://localhost:8081/secure/exception/orders
+Authorization: {{userAuth}}
+
+###
+# Business rule enforced
+# Exceptional state rejected
+# Expected: 400 Bad Request
+POST http://localhost:8081/secure/exception/orders/1/close
+Authorization: {{userAuth}}
+
+###
+# Sensitive error information not exposed
+# Expected: 500 Internal Server Error (sanitized)
+GET http://localhost:8081/secure/exception/orders/1/debug
+Authorization: {{userAuth}}

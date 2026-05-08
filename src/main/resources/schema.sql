@@ -1,0 +1,14 @@
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS product;
+
+CREATE TABLE orders (
+    id BIGINT PRIMARY KEY,
+    created_by VARCHAR(50)
+);
+
+CREATE TABLE product (
+ id BIGINT AUTO_INCREMENT PRIMARY KEY,
+ name VARCHAR(255),
+ category VARCHAR(100),
+ price DOUBLE
+);

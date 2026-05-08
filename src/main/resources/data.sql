@@ -1,0 +1,24 @@
+INSERT INTO orders (id, created_by) VALUES (1, 'user');
+INSERT INTO orders (id, created_by) VALUES (2, 'admin');
+INSERT INTO orders (id, created_by) VALUES (3, 'user1');
+INSERT INTO orders (id, created_by) VALUES (4, 'user2');
+INSERT INTO orders (id, created_by) VALUES (5, 'user3');
+INSERT INTO orders (id, created_by) VALUES (6, 'admin');
+INSERT INTO orders (id, created_by) VALUES (7, 'user4');
+INSERT INTO orders (id, created_by) VALUES (8, 'user5');
+INSERT INTO orders (id, created_by) VALUES (9, 'admin');
+INSERT INTO orders (id, created_by) VALUES (10, 'user6');
+
+INSERT INTO product(name,category,price) VALUES ('Laptop','electronics',1200);
+INSERT INTO product(name,category,price) VALUES ('Mouse','electronics',20);
+INSERT INTO product(name,category,price) VALUES ('Desk','furniture',200);
+INSERT INTO product(name,category,price) VALUES ('Chair','furniture',150);
+INSERT INTO product(name,category,price) VALUES ('Keyboard','electronics',50);
+INSERT INTO product(name,category,price) VALUES ('Monitor','electronics',300);
+INSERT INTO product(name,category,price) VALUES ('Bookshelf','furniture',250);
+INSERT INTO product(name,category,price) VALUES ('Lamp','furniture',75);
+INSERT INTO product(name,category,price) VALUES ('Headphones','electronics',100);
+INSERT INTO product(name,category,price) VALUES ('Tablet','electronics',400);
+INSERT INTO product(name,category,price) VALUES ('Java Programming Book','books',45);
+INSERT INTO product(name,category,price) VALUES ('Security Handbook','books',60);
+INSERT INTO product(name,category,price) VALUES ('Database Design Guide','books',55);
