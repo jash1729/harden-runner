@@ -1,0 +1,27 @@
+name: CI Demo with Harden Runner
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  demo:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Harden Runner (this is the security layer)
+      - name: Harden-Runner
+        uses: step-security/harden-runner@v2.19.1
+        with:
+          egress-policy: audit
+
+      # Step 3: simple test command
+      - name: Run demo command
+        run: |
+          echo "Hello from CI"
+          curl https://www.hello-world.com
